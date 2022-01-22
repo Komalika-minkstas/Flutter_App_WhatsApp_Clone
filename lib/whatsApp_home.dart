@@ -70,16 +70,7 @@ class _WhatsAppHomeState extends State<WhatsAppHome>
           new CallScreen(),
         ],
       ),
-      floatingActionButton: new FloatingActionButton(
-        backgroundColor: Theme.of(context).accentColor,
-        child: new Icon(
-            Icons.message,
-            color: Colors.white,
-        ),
-        onPressed: () {
-          Navigator.push(context,MaterialPageRoute(builder: (builder)=>SelectContact()));
-        },
-      ),
+
     );
   }
 }

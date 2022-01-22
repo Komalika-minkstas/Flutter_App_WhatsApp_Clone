@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsap_clone/CustomUI/customCard.dart';
 import 'package:whatsap_clone/models/chat_models.dart';
+import 'package:whatsap_clone/pages/selectContact.dart';
 
 class ChatScreen extends StatefulWidget{
   ChatScreen({Key? key}) : super(key: key);
@@ -73,11 +74,22 @@ class ChatScreen extends StatefulWidget{
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
+
       body: ListView.builder(
         itemCount: dummyData.length,
         itemBuilder: (contex,i)=>CustomCard(
             chatModel: dummyData[i],
         ) ,
+      ),
+      floatingActionButton: new FloatingActionButton(
+        backgroundColor: Theme.of(context).accentColor,
+        child: new Icon(
+          Icons.message,
+          color: Colors.white,
+        ),
+        onPressed: () {
+          Navigator.push(context,MaterialPageRoute(builder: (builder)=>SelectContact()));
+        },
       ),
     );
   }
