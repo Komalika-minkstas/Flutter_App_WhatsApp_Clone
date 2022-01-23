@@ -5,11 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:whatsap_clone/CustomUI/ReplyCard.dart';
 import 'package:whatsap_clone/CustomUI/ownMessageCard.dart';
 import 'package:whatsap_clone/models/chat_models.dart';
-
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:whatsap_clone/models/messageModel.dart';
 
 class IndividualPage extends StatefulWidget{
-  IndividualPage({Key? key, required this.chatModel}): super(key: key);
+  IndividualPage({Key? key, required this.chatModel, required this.sourceChat}): super(key: key);
   final ChatModel chatModel;
+  final ChatModel sourceChat;
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -19,12 +22,17 @@ class IndividualPage extends StatefulWidget{
 }
 class _IndividualPageState extends State<IndividualPage>{
   bool show=false;
+  bool sendButton=false;
   FocusNode focusNode=FocusNode();
+  List<MessageModel> messages=[];
   TextEditingController _controller=TextEditingController();
+  ScrollController _scrollController= ScrollController();
+  late IO.Socket socket;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    connect();
     focusNode.addListener(() {
       if(focusNode.hasFocus){
         setState((){
@@ -33,6 +41,44 @@ class _IndividualPageState extends State<IndividualPage>{
       }
     });
   }
+
+  void connect(){
+    socket = IO.io("http://192.168.29.130:5000", <String, dynamic>{
+      "transports": ["websocket"],
+      "autoConnect": false,
+    });
+    socket.connect();
+    socket.emit("signin",widget.sourceChat.id);
+    socket.onConnect((data) {
+      print("Connected");
+      socket.on("message", (msg) {
+        print(msg);
+        setMessage("destination", msg["message"]);
+        _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: Duration(milliseconds: 300),
+            curve: Curves.easeOut);
+      });
+    });
+    print(socket.connected);
+
+}
+
+void sendMessage(String message, int sourceId, int targetId){
+    setMessage("source", message);
+    socket.emit("message",
+        {"message":message,"sourceId": sourceId,"targetId":targetId});
+}
+
+void setMessage(String type, String message){
+    MessageModel messageModel=MessageModel(
+        message: message,
+        type: type,
+        time: DateTime.now().toString().substring(10,16));
+    setState(() {
+      messages.add(messageModel);
+    });
+}
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -110,103 +156,141 @@ class _IndividualPageState extends State<IndividualPage>{
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             child: WillPopScope(
-              child: Stack(
+              child: Column(
                 children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height-140,
-                    child: ListView(
+                  Expanded(
+                    //height: MediaQuery.of(context).size.height-140,
+                    child: ListView.builder(
                       shrinkWrap: true,
-                      children: [
-                        OwnMessageCard(),
-                        ReplyCard(),
-                        OwnMessageCard(),
-                        ReplyCard(),
-                        OwnMessageCard(),
-                        ReplyCard(),
-                        OwnMessageCard(),
-                        ReplyCard(),
-                        OwnMessageCard(),
-                        ReplyCard(),
-                        OwnMessageCard(),
-                        ReplyCard(),
-                        OwnMessageCard(),
-                        ReplyCard(),
-                      ],
+                      controller: _scrollController,
+                      itemCount: messages.length+1,
+                      itemBuilder: (context,i){
+                        if(i==messages.length){
+                          return Container(
+                            height: 70,
+                          );
+                        }
+                        if(messages[i].type=="source"){
+                          return OwnMessageCard(
+                            message: messages[i].message,
+                            time: messages[i].time
+                          );
+                        }
+                        else{
+                          return ReplyCard(
+                            message: messages[i].message,
+                              time: messages[i].time
+                          );
+                        }
+                      },
                     ),
                   ),
                   Align(
                     alignment: Alignment.bottomCenter,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end ,
+                      child: Container(
+                        height: 70,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end ,
+                            children: [
+                              Row(
                           children: [
-                            Row(
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width-60,
-                            child: Card(
-                              margin: EdgeInsets.only(left: 2,right: 2,bottom: 8),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-                                child: TextFormField(
-                                  controller: _controller,
-                                  focusNode: focusNode,
-                                  textAlignVertical: TextAlignVertical.center,
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: 5,
-                                  minLines: 1,
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: "Type a message",
-                                    prefixIcon: IconButton(
-                                      icon: Icon(Icons.emoji_emotions_outlined),
-                                      onPressed: () {
-                                        if(!show){
-                                          focusNode.unfocus();
-                                          focusNode.canRequestFocus=false;
-                                        }
-                                        setState(){
-                                          show=!show;
-                                        }
-                                      },
-                                    ) ,
-                                    suffixIcon: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        IconButton(
-                                            icon: Icon(Icons.attach_file),
-                                            onPressed: () {
-                                              showModalBottomSheet(
-                                                backgroundColor: Colors.transparent,
-                                                context: context,
-                                                builder: (builder) => bottomsheet());
-                                            }
-                                        ),
-                                        IconButton(
-                                            onPressed: () {},
-                                            icon: Icon(Icons.camera_alt))
-                                      ],
-                                    ),
-                                    contentPadding: EdgeInsets.all(5)
-                                  ),
-                                )
-                            )
-
-                          ),
-                              Padding(
-                                  padding: const EdgeInsets.only(bottom: 8.0,right: 5.0,left: 2),
-                                  child: CircleAvatar(
-                                    radius: 25,
-                                    backgroundColor: Color(0xff128C7E),
-                                    child: IconButton(
-                                      onPressed: () {},
-                                      icon: Icon(Icons.mic,color: Colors.white),
+                            Container(
+                              width: MediaQuery.of(context).size.width-60,
+                              child: Card(
+                                margin: EdgeInsets.only(left: 2,right: 2,bottom: 8),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                                  child: TextFormField(
+                                    controller: _controller,
+                                    focusNode: focusNode,
+                                    textAlignVertical: TextAlignVertical.center,
+                                    keyboardType: TextInputType.multiline,
+                                    maxLines: 5,
+                                    minLines: 1,
+                                    onChanged: (value){
+                                      if(value.length>0){
+                                        setState(() {
+                                          sendButton=true;
+                                        });
+                                      }
+                                      else{
+                                        setState(() {
+                                          sendButton=false;
+                                        });
+                                      }
+                                    },
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: "Type a message",
+                                      prefixIcon: IconButton(
+                                        icon: Icon(Icons.emoji_emotions_outlined),
+                                        onPressed: () {
+                                          if(!show){
+                                            focusNode.unfocus();
+                                            focusNode.canRequestFocus=false;
+                                          }
+                                          setState(){
+                                            show=!show;
+                                          }
+                                        },
+                                      ) ,
+                                      suffixIcon: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          IconButton(
+                                              icon: Icon(Icons.attach_file),
+                                              onPressed: () {
+                                                showModalBottomSheet(
+                                                  backgroundColor: Colors.transparent,
+                                                  context: context,
+                                                  builder: (builder) => bottomsheet());
+                                              }
+                                          ),
+                                          IconButton(
+                                              onPressed: () {},
+                                              icon: Icon(Icons.camera_alt))
+                                        ],
+                                      ),
+                                      contentPadding: EdgeInsets.all(5)
                                     ),
                                   )
                               )
-                        ],
-                      ),
-                           show? emojiSelect():Container(),
+
+                            ),
+                                Padding(
+                                    padding: const EdgeInsets.only(bottom: 8.0,right: 5.0,left: 2),
+                                    child: CircleAvatar(
+                                      radius: 25,
+                                      backgroundColor: Color(0xff128C7E),
+                                      child: IconButton(
+                                        onPressed: () {
+                                          if(sendButton){
+                                            _scrollController.animateTo(
+                                                _scrollController.position.maxScrollExtent,
+                                                duration: Duration(milliseconds: 300),
+                                                curve: Curves.easeOut);
+                                            sendMessage(
+                                                _controller.text,
+                                                widget.sourceChat.id!,
+                                                widget.chatModel.id!,
+                                            );
+                                              _controller.clear();
+                                              setState(() {
+                                                sendButton=false;
+                                              });
+                                          }
+                                        },
+                                        icon: Icon(
+                                            sendButton? Icons.send : Icons.mic,
+                                            color: Colors.white),
+                                      ),
+                                    )
+                                )
+                          ],
+                        ),
+                             show? emojiSelect():Container(),
                 ],
                   ),
+                      ),
                   ),
                 ],
               ),

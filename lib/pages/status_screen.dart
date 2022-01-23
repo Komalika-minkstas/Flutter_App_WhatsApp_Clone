@@ -2,116 +2,126 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:whatsap_clone/CustomUI/contactCard.dart';
+import 'package:whatsap_clone/CustomUI/statusPage/headStatus.dart';
+import 'package:whatsap_clone/CustomUI/statusPage/otherStatus.dart';
 import 'package:whatsap_clone/models/chat_models.dart';
 
-class StatusScreen extends StatelessWidget{
+class StatusScreen extends StatefulWidget {
+  @override
+  State<StatusScreen> createState() => _StatusScreenState();
+}
 
+class _StatusScreenState extends State<StatusScreen> {
   @override
   Widget build(BuildContext context) {
-    List<ChatModel> contacts=[
-      ChatModel(
-          name: "Dev Stack",
-          status: "A full Stack Developer"
-      ),
-      ChatModel(
-          name: "Dev Stack",
-          status: "A full Stack Developer"
-      ),
-      ChatModel(
-          name: "Dev Stack",
-          status: "A full Stack Developer"
-      ),
-      ChatModel(
-          name: "Dev Stack",
-          status: "A full Stack Developer"
-      ),
-    ];
-    // TODO: implement build
     return Scaffold(
-      body: InkWell(
-        onTap: () {},
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Container(
+            height: 48,
+            child: FloatingActionButton(
+              backgroundColor: Colors.blueGrey[100],
+              onPressed: () {},
+              child: Icon(
+                Icons.edit,
+                color: Colors.blueGrey[900],
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 13,
+          ),
+          FloatingActionButton(
+            onPressed: () {},
+            backgroundColor: Colors.greenAccent[700],
+            elevation: 5,
+            child: Icon(Icons.camera_alt),
+          )
+        ],
+      ),
+      body: SingleChildScrollView(
         child: Column(
           children: [
-            ListTile(
-              leading: Container(
-                height: 50,
-                width: 50,
-                child: Stack(
-                  children: [
-                    CircleAvatar(
-                    radius: 30,
-                    child: SvgPicture.asset("assets/person.svg",color: Colors.white,height: 30,width: 30,),
-                    backgroundColor: Colors.blueGrey[200],
-                  ),
-                Positioned(
-                    bottom: 0,
-                    right: 1,
-                    child: CircleAvatar(
-                        backgroundColor: Colors.teal,
-                        radius: 11,
-
-                        child: Icon(Icons.add, color: Colors.white,size: 18,)),
-                )
-                  ]
-                ),
-              ),
-
-              title: Text(
-                "My Status",
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              subtitle: Text(
-                    "Tap to add a status",
-                    style: TextStyle(
-                      fontSize: 13,
-                    ),
-                  )
+            SizedBox(
+              height: 10,
             ),
-            Container(
-              padding: EdgeInsets.all(10),
-              color: Color(0xfff2efe9),
-              width: MediaQuery.of(context).size.width,
-              child: Text("Recent Updates",style: TextStyle(
-                  fontSize: 13,
-                  color: Color(0xff006400)),),
-              ),
+            HeadOwnStatus(),
+            label("Recent updates"),
+            OtherStatus(
+              name: "Karishma",
+              time: "01:23",
+              imageName: "assets/di.jpg",
+              Seen: false,
+              statusNum: 1,
+            ),
+            OtherStatus(
+              name: "Shraddha",
+              time: "00:50",
+              imageName: "assets/shraddha.jpg",
+              Seen: false,
+              statusNum: 3,
+            ),
+            OtherStatus(
+              name: "Mumma",
+              time: "00:45",
+              imageName: "assets/mumma.jpeg",
+              Seen: false,
+              statusNum: 2,
+            ),
+            OtherStatus(
+              name: "Tarun",
+              time: "00:10",
+              imageName: "assets/tarun.jpg",
+              Seen: false,
+              statusNum: 4,
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            label("Viewed updates"),
+            OtherStatus(
+              name: "Shraddha",
+              time: "00:50",
+              imageName: "assets/shraddha.jpg",
+              Seen: true,
+              statusNum: 3,
+            ),
+            OtherStatus(
+              name: "Mumma",
+              time: "00:45",
+              imageName: "assets/mumma.jpeg",
+              Seen: true,
+              statusNum: 3,
+            ),
+            OtherStatus(
+              name: "Tarun",
+              time: "00:10",
+              imageName: "assets/tarun.jpg",
+              Seen: true,
+              statusNum: 2,
+            ),
           ],
         ),
       ),
+    );
+  }
 
-      floatingActionButton:Padding(
-        padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Container(
-                    height: 45,
-                    width: 45,
-                    child: FloatingActionButton(
-                      backgroundColor: Colors.white,
-                      child: new Icon(
-                        Icons.edit,
-                        color: Colors.black87,
-                        size: 25,
-                      ),
-                      onPressed: () {},
-                    ),
-                  ),
-                  SizedBox(height: 8,),
-                  FloatingActionButton(
-                    backgroundColor: Theme.of(context).accentColor,
-                    child: new Icon(
-                      Icons.camera_alt,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {},
-                  ),
-                ]
-            ),
-          )
-      );
+  Widget label(String labelName) {
+    return Container(
+      height: 33,
+      width: MediaQuery.of(context).size.width,
+      color: Colors.grey[300],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
+        child: Text(
+          labelName,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
   }
 }

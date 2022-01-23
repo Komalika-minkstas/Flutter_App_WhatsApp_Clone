@@ -5,7 +5,9 @@ import 'package:whatsap_clone/models/chat_models.dart';
 import 'package:whatsap_clone/pages/selectContact.dart';
 
 class ChatScreen extends StatefulWidget{
-  ChatScreen({Key? key}) : super(key: key);
+  ChatScreen({Key? key, required this.chatModels, required this.sourceChat}) : super(key: key);
+  final List<ChatModel> chatModels;
+  final ChatModel sourceChat;
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -14,71 +16,17 @@ class ChatScreen extends StatefulWidget{
 
 }
  class ChatScreenState extends State<ChatScreen>{
-  List<ChatModel> dummyData=[
-    new ChatModel(
-        name: "Karishma",
-        message: "You looked amazing today",
-        time: "15:30",
-        isGroup: false,
-        id: 1,
-        status: "seen",
-        avatarUrl: "https://qphs.fs.quoracdn.net/main-qimg-ac7d5daa6d546a312bc7c5217b368677-lq"
-    ),
-    new ChatModel(
-        name: "Karishma",
-        message: "You looked amazing today",
-        time: "15:30",
-        isGroup: false,
-        id: 1,
-        status: "seen",
-        avatarUrl: "https://qphs.fs.quoracdn.net/main-qimg-ac7d5daa6d546a312bc7c5217b368677-lq"
-    ),
-    new ChatModel(
-        name: "Karishma",
-        message: "You looked amazing today",
-        time: "15:30",
-        isGroup: false,
-        id: 1,
-        status: "seen",
-        avatarUrl: "https://qphs.fs.quoracdn.net/main-qimg-ac7d5daa6d546a312bc7c5217b368677-lq"
-    ),
-    new ChatModel(
-        name: "Karishma",
-        message: "You looked amazing today",
-        time: "15:30",
-        isGroup: false,
-        id: 1,
-        status: "seen",
-        avatarUrl: "https://qphs.fs.quoracdn.net/main-qimg-ac7d5daa6d546a312bc7c5217b368677-lq"
-    ),
-    new ChatModel(
-        name: "Karishma",
-        message: "You looked amazing today",
-        time: "15:30",
-        isGroup: false,
-        id: 1,
-        status: "seen",
-        avatarUrl: "https://qphs.fs.quoracdn.net/main-qimg-ac7d5daa6d546a312bc7c5217b368677-lq"
-    ),
-    new ChatModel(
-        name: "Karishma",
-        message: "You looked amazing today",
-        time: "15:30",
-        isGroup: false,
-        id: 1,
-        status: "seen",
-        avatarUrl: "https://qphs.fs.quoracdn.net/main-qimg-ac7d5daa6d546a312bc7c5217b368677-lq"
-    ),
-  ];
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
 
       body: ListView.builder(
-        itemCount: dummyData.length,
+        itemCount: widget.chatModels.length,
         itemBuilder: (contex,i)=>CustomCard(
-            chatModel: dummyData[i],
+            chatModel: widget.chatModels[i],
+          sourceChat: widget.sourceChat,
         ) ,
       ),
       floatingActionButton: new FloatingActionButton(

@@ -1,11 +1,13 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:whatsap_clone/NewScreen/landingScreen.dart';
 import 'package:whatsap_clone/pages/cameraScreen.dart';
+import 'package:whatsap_clone/pages/loginScreen.dart';
 import 'package:whatsap_clone/whatsApp_home.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  cameras= await availableCameras();
+  cameras = await availableCameras();
   runApp(new MyApp());
 }
 
@@ -21,8 +23,7 @@ class MyApp extends StatelessWidget {
         accentColor: Color(0xff128C7E),
       ),
       debugShowCheckedModeBanner: false,
-      home: new WhatsAppHome(),
+      home: LandingScreen(),
     );
   }
-  
 }

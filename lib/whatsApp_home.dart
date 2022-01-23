@@ -5,7 +5,12 @@ import 'package:whatsap_clone/pages/chat_screen.dart';
 import 'package:whatsap_clone/pages/selectContact.dart';
 import 'package:whatsap_clone/pages/status_screen.dart';
 
+import 'models/chat_models.dart';
+
 class WhatsAppHome extends StatefulWidget{
+  WhatsAppHome({Key? key, required this.chatModels, required this.sourceChat}): super(key: key);
+  final List<ChatModel> chatModels;
+  final ChatModel sourceChat;
   @override
   State<StatefulWidget> createState() => new _WhatsAppHomeState();
 
@@ -65,7 +70,10 @@ class _WhatsAppHomeState extends State<WhatsAppHome>
         controller: _tabController,
         children: <Widget>[
           new CameraPage(),
-          new ChatScreen(),
+          new ChatScreen(
+            chatModels: widget.chatModels,
+            sourceChat: widget.sourceChat,
+          ),
           new StatusScreen(),
           new CallScreen(),
         ],
