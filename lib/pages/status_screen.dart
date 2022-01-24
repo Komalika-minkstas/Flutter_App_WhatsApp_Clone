@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -5,8 +6,12 @@ import 'package:whatsap_clone/CustomUI/contactCard.dart';
 import 'package:whatsap_clone/CustomUI/statusPage/headStatus.dart';
 import 'package:whatsap_clone/CustomUI/statusPage/otherStatus.dart';
 import 'package:whatsap_clone/models/chat_models.dart';
+import 'package:whatsap_clone/pages/cameraScreen.dart';
+import 'package:http/http.dart' as http;
 
 class StatusScreen extends StatefulWidget {
+  const StatusScreen({Key? key}) : super(key: key);
+
   @override
   State<StatusScreen> createState() => _StatusScreenState();
 }
